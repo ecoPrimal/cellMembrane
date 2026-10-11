@@ -34,6 +34,7 @@
 
 pub mod arch;
 pub mod caddy;
+pub mod campfire;
 pub mod channels;
 pub mod composition;
 pub mod config;
@@ -113,6 +114,11 @@ pub use fleet::{
 pub use visitor::{
     PROBE_PREFIXES, SESSION_WINDOW_SECS, VELOCITY_THRESHOLD, VELOCITY_WINDOW_SECS, Symbiosis,
     VisitorClass, classify_path, classify_request, classify_visitor,
+};
+pub use campfire::{
+    CampfireStory, ContentDomain, MembraneOp, MirrorMessage, NavigationFlow, PageMirror,
+    PagePerspective, StoryKind, StoryTeller, SurfaceMirror, SurfaceShape, TemporalCharacter,
+    VisitorArchetype,
 };
 
 /// Shared serde default for boolean fields that should be `true` when omitted.
