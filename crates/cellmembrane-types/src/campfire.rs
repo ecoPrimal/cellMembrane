@@ -640,3 +640,51 @@ pub struct CampfirePulse {
     /// Pulse trend.
     pub trend: String,
 }
+
+// ── Neutron Layer (Wave 179) ─────────────────────────────────────────────
+// How information travels. The messaging axis. Without it, info is stuck.
+
+/// A referrer mirror — where visitors came from → where they went.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NeutronMirror {
+    /// Source surface (where they came from).
+    pub from_surface: String,
+    /// Destination surface (where they went).
+    pub to_surface: String,
+    /// Number of crossings in this direction.
+    pub crossings: u64,
+    /// Most recent crossing timestamp.
+    pub last_seen: String,
+}
+
+/// A touch — a signal event from a surface.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NeutronTouch {
+    /// Surface that was touched.
+    pub surface: String,
+    /// Page that was touched.
+    pub page: String,
+    /// Touch count (how many visitors touched this).
+    pub touches: u64,
+    /// Referrer domain (external: google, bing, direct, etc.)
+    pub referrer: String,
+}
+
+/// Neutron state — the messaging layer snapshot.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NeutronState {
+    /// When this snapshot was generated.
+    pub generated: String,
+    /// Mirror flows — referrer chains between surfaces.
+    pub mirrors: Vec<NeutronMirror>,
+    /// External touches — how visitors arrive from outside.
+    pub touches: Vec<NeutronTouch>,
+    /// Surface-to-surface flow matrix (sparse).
+    pub flows: std::collections::BTreeMap<String, std::collections::BTreeMap<String, u64>>,
+    /// Total cross-surface navigations observed.
+    pub total_crossings: u64,
+    /// Surfaces that are "stuck" — no outgoing links observed.
+    pub stuck: Vec<String>,
+    /// Surfaces that are "radiating" — high outgoing flow.
+    pub radiating: Vec<String>,
+}
