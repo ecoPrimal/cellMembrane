@@ -396,6 +396,10 @@ pub enum StoryKind {
     /// Story about a surface's self-awareness.
     Surface,
     /// Words left in the mirror by a visitor.
+    /// Beacons visible from this campfire — cities, towns, hamlets in the distance.
+    Horizon,
+    /// The pulse of the fire — heartbeat metrics.
+    Pulse,
     Mirror,
 }
 
@@ -518,4 +522,121 @@ mod tests {
         assert_eq!(parsed.story, story.story);
         assert_eq!(parsed.teller, StoryTeller::Membrane);
     }
+}
+
+// ── Beacon Layer (Wave 178) ─────────────────────────────────────────
+
+/// Sub-membrane campfire beacon — a localized fire visible from the distance.
+///
+/// Each surface is a beacon. Cities blaze, towns glow, hamlets flicker.
+/// You can see nearby fires and follow trails between them.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Beacon {
+    /// Surface key (e.g. "cytokine", "git", "detroit").
+    pub surface: String,
+    /// Human-readable name.
+    pub name: String,
+    /// Content domain.
+    pub domain: ContentDomain,
+    /// Total hits from human visitors.
+    pub hits: u64,
+    /// Number of distinct visitor shapes.
+    pub visitors: usize,
+    /// Unique pages touched within this surface.
+    pub unique_pages: usize,
+    /// Beacon brightness (0.0–1.0), log-scaled relative to peak.
+    pub brightness: f64,
+    /// Beacon glow classification.
+    pub glow: BeaconGlow,
+    /// Narrative vista — what you see looking at this fire.
+    pub vista: String,
+    /// Requests per minute for this surface.
+    pub rpm: f64,
+    /// Tempo classification from RPM.
+    pub tempo: BeaconTempo,
+    /// Surface character (shape, domain, temporal).
+    pub character: SurfaceCharacter,
+    /// Which archetypes this beacon attracts.
+    pub attracted: BTreeMap<String, usize>,
+    /// Nearby fires visible from this beacon.
+    pub nearby_fires: Vec<NearbyFire>,
+}
+
+/// How bright a beacon glows — its settlement size.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BeaconGlow {
+    /// Brightness > 0.7 — a bustling settlement.
+    City,
+    /// Brightness 0.4–0.7 — a steady gathering place.
+    Town,
+    /// Brightness 0.15–0.4 — quiet knowledge.
+    Hamlet,
+    /// Brightness < 0.15 — a faint light, someone has been here.
+    Trail,
+}
+
+/// Tempo of a beacon's activity — derived from RPM.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BeaconTempo {
+    /// RPM > 10 — high activity.
+    Rushing,
+    /// RPM 1–10 — steady activity.
+    Walking,
+    /// RPM 0.1–1 — low activity.
+    Resting,
+    /// RPM < 0.1 — near silence.
+    Still,
+}
+
+/// A nearby fire visible from a beacon.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NearbyFire {
+    /// Surface key of the nearby fire.
+    pub surface: String,
+    /// Human-readable name.
+    pub name: String,
+    /// Narrative distance (0.0–1.0, lower = closer).
+    pub distance: f64,
+    /// Glow of the nearby fire.
+    pub glow: BeaconGlow,
+}
+
+/// Surface character for beacon serialization.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SurfaceCharacter {
+    /// Content domain.
+    pub domain: String,
+    /// Temporal character.
+    pub time_character: String,
+    /// Knowledge shape.
+    pub shape: String,
+}
+
+/// Totality summary — aggregate membrane statistics.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CampfireTotality {
+    /// Total human IPs observed across all time.
+    pub human_ips: u64,
+    /// Total unique IP presences.
+    pub unique_ips: u64,
+    /// Number of active beacon surfaces.
+    pub surfaces_alive: usize,
+    /// Count by glow level.
+    pub cities: usize,
+    pub towns: usize,
+    pub hamlets: usize,
+    pub trails: usize,
+}
+
+/// Pulse snapshot for campfire display.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CampfirePulse {
+    /// Requests per minute (global).
+    pub rate: f64,
+    /// Identity match percentage.
+    pub identity_match: f64,
+    /// Pulse trend.
+    pub trend: String,
 }
