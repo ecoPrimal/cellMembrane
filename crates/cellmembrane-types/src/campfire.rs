@@ -688,3 +688,186 @@ pub struct NeutronState {
     /// Surfaces that are "radiating" — high outgoing flow.
     pub radiating: Vec<String>,
 }
+
+// ── Symbiotic Classification (Wave 180) ──────────────────────────────
+// The fistbump. Tit-for-tat-forgive-one. The golden rule in code.
+//
+// Every entity has a symbiotic relationship with the membrane.
+// We mirror their behavior, but forgive one defection before escalating.
+//
+//   mutualist  — both benefit. they give back (attribution, contribution, link).
+//   commensal  — they benefit, we're neutral. they read, don't harm.
+//   parasite   — they extract without giving. scraping, no attribution, no robots.txt.
+//   pathogen   — active harm. vuln scanning, injection, credential stuffing.
+//
+// The golden rule: treat them how we'd want to be treated.
+// If we visited their site, we'd want to read freely. So commensal is default.
+// If we contributed, we'd want to be mutualist. So contribution = mutualist.
+// If we scraped everything with no attribution, we'd deserve parasite. So it goes.
+//
+// Tit-for-tat-forgive-one: mirror their behavior, forgive the FIRST defection.
+// This is the optimal strategy in iterated prisoner's dilemma (Axelrod, 1984).
+// It means: cooperate first, then do what they did last round, but if they
+// defect once, forgive it. Only defect back after TWO consecutive defections.
+
+/// Symbiotic relationship classification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SymbioticClass {
+    /// Both benefit. Attribution, contribution, linking, funding.
+    Mutualist,
+    /// They benefit, we're neutral. Reading, indexing, normal crawling.
+    Commensal,
+    /// They extract without giving. Aggressive scraping, no attribution.
+    Parasite,
+    /// Active harm. Vulnerability scanning, injection attempts, credential stuffing.
+    Pathogen,
+    /// Not enough history to classify.
+    Null,
+}
+
+impl SymbioticClass {
+    /// Human-readable label.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Mutualist => "mutualist",
+            Self::Commensal => "commensal",
+            Self::Parasite  => "parasite",
+            Self::Pathogen  => "pathogen",
+            Self::Null      => "null",
+        }
+    }
+
+    /// Emoji icon for display.
+    pub fn icon(self) -> &'static str {
+        match self {
+            Self::Mutualist => "🤝",
+            Self::Commensal => "🌿",
+            Self::Parasite  => "🪱",
+            Self::Pathogen  => "☠️",
+            Self::Null      => "∅",
+        }
+    }
+
+    /// Friction level (0.0 = no friction, 1.0 = maximum friction).
+    pub fn friction(self) -> f64 {
+        match self {
+            Self::Mutualist => 0.0,
+            Self::Commensal => 0.1,
+            Self::Parasite  => 0.6,
+            Self::Pathogen  => 1.0,
+            Self::Null      => 0.3,
+        }
+    }
+}
+
+/// Behavioral evidence for tit-for-tat-forgive-one classification.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SymbioticEvidence {
+    /// Entity identifier.
+    pub entity: String,
+    /// Current classification.
+    pub class: SymbioticClass,
+    /// Previous classification (for tracking movement).
+    pub previous_class: Option<SymbioticClass>,
+
+    // ── Cooperation signals (positive) ──
+    /// Respects robots.txt.
+    pub respects_robots: bool,
+    /// Identifies itself honestly (UA string).
+    pub honest_identity: bool,
+    /// Provides attribution or backlinks.
+    pub provides_attribution: bool,
+    /// Contributes to commons (PRs, issues, discussions).
+    pub contributes: bool,
+    /// Links back to source material.
+    pub links_back: bool,
+
+    // ── Defection signals (negative) ──
+    /// Ignores robots.txt disallow.
+    pub ignores_robots: bool,
+    /// Spoofs identity (fake UA, missing headers).
+    pub spoofs_identity: bool,
+    /// Aggressive extraction rate (>100 RPM sustained).
+    pub aggressive_rate: bool,
+    /// Probes for vulnerabilities.
+    pub vuln_probing: bool,
+    /// Scrapes without any attribution.
+    pub no_attribution: bool,
+
+    // ── Forgiveness tracking ──
+    /// Number of consecutive defections observed.
+    pub consecutive_defections: u32,
+    /// Number of defections forgiven (max 1 for forgive-one).
+    pub defections_forgiven: u32,
+    /// Whether this entity is currently in forgiveness state.
+    pub in_forgiveness: bool,
+
+    // ── Reciprocity score ──
+    /// Cooperation count (positive interactions).
+    pub cooperation_count: u64,
+    /// Defection count (negative interactions).
+    pub defection_count: u64,
+    /// Reciprocity ratio: cooperation / (cooperation + defection).
+    /// 1.0 = pure cooperator, 0.0 = pure defector.
+    pub reciprocity: f64,
+
+    /// Current friction level applied to this entity.
+    pub friction: f64,
+    /// Waste we can offer (what the bot wants that costs us nothing to give).
+    pub waste_offered: Vec<String>,
+}
+
+/// The tit-for-tat-forgive-one classifier.
+///
+/// Given behavioral evidence, classifies the symbiotic relationship.
+/// This is the golden rule: mirror their behavior, forgive one defection.
+pub fn classify_symbiotic(evidence: &SymbioticEvidence) -> SymbioticClass {
+    // Pathogen: active harm (vuln probing, injection)
+    if evidence.vuln_probing {
+        return SymbioticClass::Pathogen;
+    }
+
+    // Mutualist: contributes back
+    if evidence.contributes || evidence.provides_attribution || evidence.links_back {
+        return SymbioticClass::Mutualist;
+    }
+
+    // Count defections
+    let defections = [
+        evidence.ignores_robots,
+        evidence.spoofs_identity,
+        evidence.aggressive_rate,
+        evidence.no_attribution,
+    ].iter().filter(|&&d| d).count();
+
+    // Count cooperations
+    let cooperations = [
+        evidence.respects_robots,
+        evidence.honest_identity,
+        evidence.provides_attribution,
+    ].iter().filter(|&&c| c).count();
+
+    // Pure cooperator → commensal
+    if defections == 0 && cooperations > 0 {
+        return SymbioticClass::Commensal;
+    }
+
+    // Tit-for-tat-forgive-one:
+    // - First defection → forgive, stay commensal
+    // - Second consecutive defection → escalate to parasite
+    if evidence.consecutive_defections <= 1 && evidence.defections_forgiven < 1 {
+        return SymbioticClass::Commensal; // forgive one
+    }
+
+    if defections >= 2 || evidence.consecutive_defections >= 2 {
+        return SymbioticClass::Parasite;
+    }
+
+    // Not enough signal
+    if cooperations == 0 && defections == 0 {
+        return SymbioticClass::Null;
+    }
+
+    SymbioticClass::Commensal
+}
