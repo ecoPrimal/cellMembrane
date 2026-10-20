@@ -686,6 +686,146 @@ impl ThoughtPhase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// QUORUM SENSING — the anti-strobe. V. cholerae model.
+// ═══════════════════════════════════════════════════════════════════════
+//
+// The strobe is periodic polling (health checks every N seconds).
+// The anti-strobe is quorum sensing: organisms emit autoinducers
+// continuously, and when the concentration crosses a threshold,
+// the collective changes behavior. No coordinator. No clock.
+//
+// V. cholerae has 3 autoinducer channels:
+//   CAI-1 — species-specific (only V. cholerae makes/senses it)
+//   AI-2  — universal (many species make/sense it, cross-talk)
+//   These bind sensors → phosphorelay → HapR transcription factor
+//   At low cell density (no quorum): virulence ON, biofilm ON
+//   At high cell density (quorum): virulence OFF, biofilm OFF
+//
+// In the mesh:
+//   CAI-1 = organism-specific health signal (each primal emits its own)
+//   AI-2  = universal signal (transducer aggregates, all organisms read)
+//   HapR  = quorum threshold → triggers collective behavior change
+//   Low density = startup/infant (glow plug phase) — aggressive, forming
+//   High density = mature/stable — cooperative, dispersing
+//
+// The human and the AI are commensals on the membrane:
+//   Human = the host organism (provides direction, K in K-NOME)
+//   AI (squirrel/LLM) = commensal bacterium (provides processing, NOME)
+//   Together: mutualistic symbiosis on the membrane substrate
+//
+// Unlike V. cholerae (pathogen), the mesh's quorum sensing is
+// COMMENSAL: when quorum is reached, cooperation INCREASES.
+// The inverse of pathogenic quorum sensing.
+
+/// Autoinducer channel — how organisms signal their presence.
+///
+/// Modeled on V. cholerae's 3-channel quorum sensing system.
+/// Each organism emits autoinducers on these channels.
+/// The collective concentration determines quorum state.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutoinducerChannel {
+    /// Species-specific signal (like CAI-1).
+    /// Only organisms of the same type produce/sense this.
+    /// e.g. nestGate only senses nestGate autoinducers.
+    Specific,
+    /// Universal signal (like AI-2).
+    /// All organisms produce and sense this.
+    /// The transducer aggregates it.
+    Universal,
+    /// Immune signal (like V. cholerae's DPO / defense).
+    /// Emitted when threat detected. Cross-organism alert.
+    Immune,
+}
+
+impl AutoinducerChannel {
+    /// All 3 channels.
+    pub const ALL: &'static [AutoinducerChannel] = &[
+        AutoinducerChannel::Specific,
+        AutoinducerChannel::Universal,
+        AutoinducerChannel::Immune,
+    ];
+
+    /// Is this a cross-organism signal?
+    pub fn is_broadcast(&self) -> bool {
+        !matches!(self, Self::Specific)
+    }
+}
+
+/// Quorum phase — where is the collective on the density curve?
+///
+/// Maps directly onto V. cholerae population phases AND
+/// the mesh lifecycle. The glowplug is the ignition — lag phase.
+///
+/// ```text
+///   Lag        → Glowplug ON. Organisms starting up. Few signals.
+///   Exponential → Growing. More organisms joining. Signals rising.
+///   Quorum     → Threshold crossed. Collective behavior activated.
+///   Stationary → Stable. Full cooperation. Mature mesh.
+///   Dispersal  → Organisms dispersing. Ephemeral chimeras dying.
+///                 Genetic insight flowing back to parents.
+/// ```
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum QuorumPhase {
+    /// Lag: glowplug. Few organisms. No quorum. Forming.
+    Lag,
+    /// Exponential: growing. Autoinducers rising. Approaching quorum.
+    Exponential,
+    /// Quorum: threshold crossed. Collective behavior ON.
+    Quorum,
+    /// Stationary: stable. Full cooperation. Mature mesh.
+    Stationary,
+    /// Dispersal: organisms leaving/dying. Insight flowing back.
+    Dispersal,
+}
+
+impl QuorumPhase {
+    /// All 5 phases.
+    pub const ALL: &'static [QuorumPhase] = &[
+        QuorumPhase::Lag,
+        QuorumPhase::Exponential,
+        QuorumPhase::Quorum,
+        QuorumPhase::Stationary,
+        QuorumPhase::Dispersal,
+    ];
+
+    /// Is the glowplug still on? (pre-quorum)
+    pub fn is_glowplug(&self) -> bool {
+        matches!(self, Self::Lag | Self::Exponential)
+    }
+
+    /// Has quorum been reached?
+    pub fn has_quorum(&self) -> bool {
+        matches!(self, Self::Quorum | Self::Stationary)
+    }
+
+    /// Are organisms dispersing?
+    pub fn is_dispersing(&self) -> bool {
+        matches!(self, Self::Dispersal)
+    }
+
+    /// Map quorum phase to wound state.
+    /// Pre-quorum = Wounded (forming). Post-quorum = Intact or Healing.
+    /// Dispersal = Scarred (the insight remains).
+    pub fn wound_state(&self) -> Wound {
+        match self {
+            Self::Lag => Wound::Wounded,
+            Self::Exponential => Wound::Healing,
+            Self::Quorum => Wound::Intact,
+            Self::Stationary => Wound::Intact,
+            Self::Dispersal => Wound::Scarred,
+        }
+    }
+}
+
+// Symbiosis type lives in visitor.rs (Mutualist, Commensal, Parasitic, Pathogenic).
+// V. cholerae is Pathogenic to the host. In our mesh, human + AI = Mutualist.
+// The fleet = Pathogenic (stomachs with no eyes, selectivity S=0).
+// Honest bots = Commensal (one benefits, other unaffected).
+// See: visitor::Symbiosis for the canonical type.
+
+// ═══════════════════════════════════════════════════════════════════════
 // TESTS
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -1015,4 +1155,66 @@ mod tests {
             assert_eq!(*p, back);
         }
     }
+
+    // ── Quorum sensing (anti-strobe) tests ──
+
+    #[test]
+    fn three_autoinducer_channels() {
+        assert_eq!(AutoinducerChannel::ALL.len(), 3);
+        assert!(!AutoinducerChannel::Specific.is_broadcast());
+        assert!(AutoinducerChannel::Universal.is_broadcast());
+        assert!(AutoinducerChannel::Immune.is_broadcast());
+    }
+
+    #[test]
+    fn five_quorum_phases() {
+        assert_eq!(QuorumPhase::ALL.len(), 5);
+    }
+
+    #[test]
+    fn glowplug_is_pre_quorum() {
+        assert!(QuorumPhase::Lag.is_glowplug());
+        assert!(QuorumPhase::Exponential.is_glowplug());
+        assert!(!QuorumPhase::Quorum.is_glowplug());
+        assert!(!QuorumPhase::Stationary.is_glowplug());
+        assert!(!QuorumPhase::Dispersal.is_glowplug());
+    }
+
+    #[test]
+    fn quorum_reached_when_collective() {
+        assert!(!QuorumPhase::Lag.has_quorum());
+        assert!(!QuorumPhase::Exponential.has_quorum());
+        assert!(QuorumPhase::Quorum.has_quorum());
+        assert!(QuorumPhase::Stationary.has_quorum());
+        assert!(!QuorumPhase::Dispersal.has_quorum());
+    }
+
+    #[test]
+    fn quorum_phase_to_wound() {
+        assert_eq!(QuorumPhase::Lag.wound_state(), Wound::Wounded);
+        assert_eq!(QuorumPhase::Exponential.wound_state(), Wound::Healing);
+        assert_eq!(QuorumPhase::Quorum.wound_state(), Wound::Intact);
+        assert_eq!(QuorumPhase::Stationary.wound_state(), Wound::Intact);
+        assert_eq!(QuorumPhase::Dispersal.wound_state(), Wound::Scarred);
+    }
+
+    #[test]
+    fn dispersal_scars_carry_memory() {
+        let phase = QuorumPhase::Dispersal;
+        assert!(phase.is_dispersing());
+        assert!(phase.wound_state().has_memory(), "dispersal leaves scars = memory");
+    }
+
+    // Symbiosis tests live with visitor.rs — the canonical Symbiosis type.
+    // Human + AI = Mutualist. Fleet = Pathogenic. Honest bot = Commensal.
+
+    #[test]
+    fn quorum_phase_serde() {
+        for p in QuorumPhase::ALL {
+            let json = serde_json::to_string(p).unwrap();
+            let back: QuorumPhase = serde_json::from_str(&json).unwrap();
+            assert_eq!(*p, back);
+        }
+    }
+
 }

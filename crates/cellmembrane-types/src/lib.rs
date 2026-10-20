@@ -132,8 +132,8 @@ pub use ecosystem::{
 pub use ecosystem::ServiceStatus as EcosystemServiceStatus;
 pub use membrane_time::{EvolutionPressure, MembraneTime, evolution_pressure};
 pub use pi_body::{
-    BodyRegion, BodyScale, ChimeraPolarity, Glyph, LocalTense, Perceive, PiAgent, Polarity, Role,
-    Tense, ThoughtPhase, ThoughtTransit, Wound, WoundSite,
+    AutoinducerChannel, BodyRegion, BodyScale, ChimeraPolarity, Glyph, LocalTense, Perceive,
+    PiAgent, Polarity, QuorumPhase, Role, Tense, ThoughtPhase, ThoughtTransit, Wound, WoundSite,
 };
 
 /// Shared serde default for boolean fields that should be `true` when omitted.
