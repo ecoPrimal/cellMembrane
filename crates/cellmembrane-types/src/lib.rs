@@ -132,7 +132,7 @@ pub use ecosystem::{
 pub use ecosystem::ServiceStatus as EcosystemServiceStatus;
 pub use membrane_time::{EvolutionPressure, MembraneTime, evolution_pressure};
 pub use pi_body::{
-    BodyRegion, BodyScale, Glyph, LocalTense, Perceive, Polarity, Role, Tense,
+    BodyRegion, BodyScale, ChimeraPolarity, Glyph, LocalTense, Perceive, Polarity, Role, Tense,
     Wound, WoundSite,
 };
 

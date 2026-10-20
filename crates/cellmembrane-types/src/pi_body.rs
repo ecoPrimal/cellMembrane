@@ -317,6 +317,86 @@ impl LocalTense {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// CHIMERA POLARITY — compositions go UP, chimeras go ACROSS
+// ═══════════════════════════════════════════════════════════════════════
+
+/// How organisms combine. Two directions:
+///
+/// **Compositions** (monotonic ladder): Relay → Tower → Nest → Nucleus.
+/// Each tier includes everything below. Vertical. Permanent. The towers.
+///
+/// **Chimeras** (mixed-boundary fusions): pick components from multiple
+/// primals, fuse into a single deployable organism. Horizontal. Can be
+/// ephemeral — mix a specialized meta-primal for use, then the genetic
+/// material disperses. The system learns from the messy experiment.
+///
+/// ```text
+///   Compositions = VERTICAL. Monotonic. Permanent rungs.
+///     Relay < Tower < Nest < Nucleus
+///     (each tier includes everything below)
+///
+///   Chimeras = HORIZONTAL. Mixed. Can be ephemeral.
+///     P2P-Secure = BearDog + Songbird
+///     ML-Pipeline = ToadStool + NestGate + Squirrel
+///     Gaming-Mesh = Songbird[] + BearDog + ToadStool
+///     Tower-Atomic = BearDog + Songbird + SkunkBat (THE triad)
+///
+///   Ephemeral chimeras = EXPERIMENTAL. Born, learn, die, disperse.
+///     Mix a specialized primal for a task.
+///     It runs, it learns, the genetic insight disperses back
+///     into the parent primals. The chimera dies.
+///     The system learned from the messy experiment.
+///     Scars on the chimera become features in the parents.
+/// ```
+///
+/// The chimera system in biomeOS (`biomeos-chimera` crate) handles the
+/// horizontal fusions. The composition system in cellmembrane-types
+/// handles the vertical ladder. Together they form a 2D space:
+/// vertical = complexity, horizontal = specialization.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ChimeraPolarity {
+    /// Composition: vertical, monotonic, permanent.
+    /// Relay → Tower → Nest → Nucleus.
+    Composition,
+    /// Chimera: horizontal, mixed-boundary, can be ephemeral.
+    /// BearDog + Songbird = P2P-Secure.
+    Chimera,
+    /// Ephemeral chimera: born, learns, dies, disperses genetic insight.
+    /// The messy experiment that teaches the system.
+    Ephemeral,
+}
+
+impl ChimeraPolarity {
+    /// All polarities.
+    pub const ALL: &'static [ChimeraPolarity] = &[
+        ChimeraPolarity::Composition,
+        ChimeraPolarity::Chimera,
+        ChimeraPolarity::Ephemeral,
+    ];
+
+    /// Is this permanent (survives indefinitely)?
+    pub const fn is_permanent(&self) -> bool {
+        matches!(self, Self::Composition | Self::Chimera)
+    }
+
+    /// Does this disperse genetic material when it dies?
+    /// Ephemeral chimeras do. Their lessons flow back to parents.
+    pub const fn disperses_on_death(&self) -> bool {
+        matches!(self, Self::Ephemeral)
+    }
+
+    /// Direction of combination.
+    pub const fn direction(&self) -> &'static str {
+        match self {
+            Self::Composition => "vertical",
+            Self::Chimera => "horizontal",
+            Self::Ephemeral => "horizontal (temporary)",
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // WOUND — life is lossy. healing > wound. scars are proof of living.
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -700,5 +780,32 @@ mod tests {
             let back: Wound = serde_json::from_str(&json).unwrap();
             assert_eq!(*w, back);
         }
+    }
+
+    // ── Chimera polarity tests ──
+
+    #[test]
+    fn three_chimera_polarities() {
+        assert_eq!(ChimeraPolarity::ALL.len(), 3);
+    }
+
+    #[test]
+    fn compositions_are_vertical_and_permanent() {
+        assert!(ChimeraPolarity::Composition.is_permanent());
+        assert!(!ChimeraPolarity::Composition.disperses_on_death());
+        assert_eq!(ChimeraPolarity::Composition.direction(), "vertical");
+    }
+
+    #[test]
+    fn chimeras_are_horizontal_and_permanent() {
+        assert!(ChimeraPolarity::Chimera.is_permanent());
+        assert!(!ChimeraPolarity::Chimera.disperses_on_death());
+        assert_eq!(ChimeraPolarity::Chimera.direction(), "horizontal");
+    }
+
+    #[test]
+    fn ephemeral_chimeras_disperse_on_death() {
+        assert!(!ChimeraPolarity::Ephemeral.is_permanent());
+        assert!(ChimeraPolarity::Ephemeral.disperses_on_death());
     }
 }
