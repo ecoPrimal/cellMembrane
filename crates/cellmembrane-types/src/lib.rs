@@ -41,6 +41,7 @@ pub mod config;
 pub mod credentials;
 pub mod cytoplasm;
 pub mod dns;
+pub mod ecosystem;
 pub mod envelope;
 pub mod error;
 pub mod firewall;
@@ -120,6 +121,13 @@ pub use campfire::{
     PagePerspective, StoryKind, StoryTeller, SurfaceMirror, SurfaceShape, TemporalCharacter,
     VisitorArchetype,
 };
+pub use ecosystem::{
+    DiscoveryConfig, HealthCheck, HealthStatus, JsonRpcError, JsonRpcRequest, JsonRpcResponse,
+    SecurityLevel, ServiceInfo,
+};
+/// Ecosystem service status (richer than process::ServiceStatus).
+/// Import via `ecosystem::ServiceStatus` to avoid collision with `process::ServiceStatus`.
+pub use ecosystem::ServiceStatus as EcosystemServiceStatus;
 
 /// Shared serde default for boolean fields that should be `true` when omitted.
 pub(crate) const fn default_true() -> bool {
