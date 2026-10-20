@@ -202,10 +202,11 @@ pub struct JsonRpcResponse {
 }
 
 /// JSON-RPC 2.0 error object.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JsonRpcError {
     /// Error code (negative for protocol errors, positive for application).
-    pub code: i64,
+    /// `i32` matches the overwhelming ecosystem convention and JSON-RPC spec.
+    pub code: i32,
 
     /// Short description.
     pub message: String,
@@ -259,7 +260,7 @@ impl JsonRpcResponse {
 
     /// Create an error response.
     #[must_use]
-    pub fn error(id: serde_json::Value, code: i64, message: impl Into<String>) -> Self {
+    pub fn error(id: serde_json::Value, code: i32, message: impl Into<String>) -> Self {
         Self {
             jsonrpc: "2.0".into(),
             result: None,
@@ -283,15 +284,15 @@ impl JsonRpcError {
     // Standard JSON-RPC 2.0 error codes
 
     /// Parse error — invalid JSON received.
-    pub const PARSE_ERROR: i64 = -32700;
+    pub const PARSE_ERROR: i32 = -32700;
     /// Invalid request — not a valid JSON-RPC request.
-    pub const INVALID_REQUEST: i64 = -32600;
+    pub const INVALID_REQUEST: i32 = -32600;
     /// Method not found.
-    pub const METHOD_NOT_FOUND: i64 = -32601;
+    pub const METHOD_NOT_FOUND: i32 = -32601;
     /// Invalid params.
-    pub const INVALID_PARAMS: i64 = -32602;
+    pub const INVALID_PARAMS: i32 = -32602;
     /// Internal error.
-    pub const INTERNAL_ERROR: i64 = -32603;
+    pub const INTERNAL_ERROR: i32 = -32603;
 }
 
 impl fmt::Display for JsonRpcError {
