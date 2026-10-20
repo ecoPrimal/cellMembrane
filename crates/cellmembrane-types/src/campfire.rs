@@ -400,6 +400,7 @@ pub enum StoryKind {
     Horizon,
     /// The pulse of the fire — heartbeat metrics.
     Pulse,
+    /// Shared reflections visible to other visitors.
     Mirror,
 }
 
@@ -624,9 +625,13 @@ pub struct CampfireTotality {
     /// Number of active beacon surfaces.
     pub surfaces_alive: usize,
     /// Count by glow level.
+    /// City-level beacons (highest glow).
     pub cities: usize,
+    /// Town-level beacons.
     pub towns: usize,
+    /// Hamlet-level beacons.
     pub hamlets: usize,
+    /// Trail-level beacons (lowest glow).
     pub trails: usize,
 }
 

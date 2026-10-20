@@ -77,7 +77,10 @@ pub struct BehavioralInvariants {
 #[serde(rename_all = "snake_case")]
 pub enum OpsonizeResponse {
     /// Serve scatter (poison) content at the given ratio.
-    Scatter { ratio: f32 },
+    Scatter {
+        /// Fraction of content to scatter (0.0–1.0).
+        ratio: f32,
+    },
     /// Abort the connection (zero signal).
     Abort,
     /// Full vanish — connection reset, no trace.

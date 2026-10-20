@@ -721,10 +721,15 @@ pub const DEFAULT_FOOTPRINT_PORT: u16 = 8090;
 /// TCP health ports for primals that primarily use UDS.
 /// These enable the TCP fallback path on platforms without UDS (Windows).
 pub const DEFAULT_BEARDOG_PORT: u16 = 9110;
+/// Default TCP port for toadStool.
 pub const DEFAULT_TOADSTOOL_PORT: u16 = 9210;
+/// Default TCP port for barraCuda.
 pub const DEFAULT_BARRACUDA_PORT: u16 = 9220;
+/// Default TCP port for coralReef.
 pub const DEFAULT_CORALREEF_PORT: u16 = 9230;
+/// Default TCP port for biomeOS.
 pub const DEFAULT_BIOMEOS_PORT: u16 = 9300;
+/// Default TCP port for squirrel.
 pub const DEFAULT_SQUIRREL_PORT: u16 = 9310;
 
 // ── Domain names ─────────────────────────────────────────────────────

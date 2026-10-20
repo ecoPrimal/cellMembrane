@@ -14,6 +14,7 @@ pub use posture::*;
 pub use antibody::*;
 pub use opsonize::*;
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
