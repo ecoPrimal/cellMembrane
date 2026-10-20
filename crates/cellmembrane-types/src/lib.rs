@@ -43,6 +43,7 @@ pub mod cytoplasm;
 pub mod dns;
 pub mod ecosystem;
 pub mod envelope;
+pub mod membrane_time;
 pub mod error;
 pub mod firewall;
 pub mod fleet;
@@ -128,6 +129,7 @@ pub use ecosystem::{
 /// Ecosystem service status (richer than process::ServiceStatus).
 /// Import via `ecosystem::ServiceStatus` to avoid collision with `process::ServiceStatus`.
 pub use ecosystem::ServiceStatus as EcosystemServiceStatus;
+pub use membrane_time::{EvolutionPressure, MembraneTime, evolution_pressure};
 
 /// Shared serde default for boolean fields that should be `true` when omitted.
 pub(crate) const fn default_true() -> bool {
