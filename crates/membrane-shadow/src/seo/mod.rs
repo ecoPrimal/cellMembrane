@@ -43,8 +43,11 @@ const GSC_PROPERTY: &str = "sc-domain:primals.eco";
 
 /// Sitemap URLs to submit/query (derived from PUBLISH_SITES).
 const SITEMAP_URLS: &[&str] = &[
-    "https://sporeprint.primals.eco/sitemap.xml",
     "https://detroit.primals.eco/sitemap.xml",
+    "https://sporeprint.primals.eco/sitemap.xml",
+    "https://signal.primals.eco/sitemap.xml",
+    "https://tuebor.primals.eco/sitemap.xml",
+    "https://hud.primals.eco/sitemap.xml",
 ];
 
 /// Configuration for a single site's SEO (IndexNow + sitemap).
@@ -155,7 +158,7 @@ pub const PUBLISH_SITES: &[PublishSite] = &[
         seo: SiteConfig {
             host: "hud.primals.eco",
             sitemap: "https://hud.primals.eco/sitemap.xml",
-            indexnow_key: "",
+            indexnow_key: "ca67fcad8b77d9c1fb3db97977041528",
         },
         evidence_dir: None,
         artifact_command: None,
