@@ -131,7 +131,7 @@ pub use ecosystem::{
 /// Import via `ecosystem::ServiceStatus` to avoid collision with `process::ServiceStatus`.
 pub use ecosystem::ServiceStatus as EcosystemServiceStatus;
 pub use membrane_time::{EvolutionPressure, MembraneTime, evolution_pressure};
-pub use pi_body::{BodyRegion, BodyScale, Glyph, Perceive, Polarity, Role};
+pub use pi_body::{BodyRegion, BodyScale, Glyph, LocalTense, Perceive, Polarity, Role, Tense};
 
 /// Shared serde default for boolean fields that should be `true` when omitted.
 pub(crate) const fn default_true() -> bool {

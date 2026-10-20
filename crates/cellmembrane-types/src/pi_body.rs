@@ -240,6 +240,67 @@ impl Polarity {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// TENSE — local and decentralized, not a global arrow
+// ═══════════════════════════════════════════════════════════════════════
+
+/// Tense — LOCAL to an observer, not global.
+///
+/// Each node has its own "is". What's "is" for squirrel on eastgate
+/// may be "was" for bearDog on northgate. There is no global clock.
+///
+/// 5 values. The first 3 (Was/Is/WillBe) are structural — they form
+/// the tesseract grid. Isnt and Null are observer-relative overlays.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Tense {
+    /// Observed, fossilized. The fossil record. Shared.
+    Was,
+    /// Currently live HERE. Hyper-local. Decays with distance.
+    Is,
+    /// Projected, expected. Only a prediction.
+    WillBe,
+    /// Actively absent — known to NOT be. A dead socket. Not the same as Null.
+    Isnt,
+    /// Origin, the O, the bee. Neither is nor isn't. Unobserved.
+    Null,
+}
+
+impl Tense {
+    /// The 3 primary tenses (tesseract grid positions).
+    pub const PRIMARY: &'static [Tense] = &[Tense::Was, Tense::Is, Tense::WillBe];
+
+    /// All 5 tenses.
+    pub const ALL: &'static [Tense] = &[
+        Tense::Was, Tense::Is, Tense::WillBe, Tense::Isnt, Tense::Null,
+    ];
+
+    /// Is this a primary (grid) tense?
+    pub const fn is_primary(&self) -> bool {
+        matches!(self, Self::Was | Self::Is | Self::WillBe)
+    }
+}
+
+/// Locality of a tense observation. "Is" decays with distance.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LocalTense {
+    /// The observed tense.
+    pub tense: Tense,
+    /// Who observes this? Organism name or perceive label.
+    pub observer: String,
+    /// Locality radius (0 = hyper-local, higher = farther).
+    pub radius: u8,
+    /// Confidence (0.0–1.0). Decays as 1/(1+radius).
+    pub confidence: f64,
+}
+
+impl LocalTense {
+    /// Hyper-local observation (radius 0, confidence 1.0).
+    pub fn here(tense: Tense, observer: impl Into<String>) -> Self {
+        Self { tense, observer: observer.into(), radius: 0, confidence: 1.0 }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // TESTS
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -308,5 +369,35 @@ mod tests {
         let json = serde_json::to_string(&glyph).unwrap();
         let back: Glyph = serde_json::from_str(&json).unwrap();
         assert_eq!(glyph, back);
+    }
+
+    #[test]
+    fn five_tenses() {
+        assert_eq!(Tense::ALL.len(), 5);
+        assert_eq!(Tense::PRIMARY.len(), 3);
+    }
+
+    #[test]
+    fn isnt_is_not_null() {
+        assert_ne!(Tense::Isnt, Tense::Null);
+        assert!(!Tense::Isnt.is_primary());
+        assert!(!Tense::Null.is_primary());
+    }
+
+    #[test]
+    fn local_tense_hyper_local() {
+        let lt = LocalTense::here(Tense::Is, "squirrel");
+        assert_eq!(lt.radius, 0);
+        assert_eq!(lt.confidence, 1.0);
+        assert_eq!(lt.tense, Tense::Is);
+    }
+
+    #[test]
+    fn tense_serde() {
+        for t in Tense::ALL {
+            let json = serde_json::to_string(t).unwrap();
+            let back: Tense = serde_json::from_str(&json).unwrap();
+            assert_eq!(*t, back);
+        }
     }
 }
