@@ -187,6 +187,22 @@ impl Glyph {
     }
 }
 
+impl Glyph {
+    /// Anderson selectivity S — the stomachs-with-no-eyes thesis.
+    ///
+    /// S=1.0 → maximally selective (membrane distinguishes everything).
+    /// S=0.0 → stomachs with no eyes (consumes everything identically).
+    /// The fleet ingests at S=0. The membrane observes at S≈1.0.
+    pub const fn selectivity(&self) -> f64 {
+        match self {
+            Self::Asserted => 1.0,       // verified, the membrane SEES this
+            Self::Unknown => 0.5,        // partial selectivity
+            Self::Null => 1.0,           // origin is perfectly known
+            Self::Ungrounded => 0.0,     // stomachs with no eyes
+        }
+    }
+}
+
 impl std::fmt::Display for Glyph {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.symbol())
