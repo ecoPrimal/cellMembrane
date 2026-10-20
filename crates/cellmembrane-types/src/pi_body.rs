@@ -571,6 +571,121 @@ impl WoundSite {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// PI AGENT — subagent that lives IN the mesh, not outside it.
+// ═══════════════════════════════════════════════════════════════════════
+//
+// The key insight: the subagent IS the mesh. It's not a separate thing.
+//
+// In Cursor, subagents are ephemeral chimeras — they spawn, do work, die,
+// and their results disperse back into the parent context. That IS the
+// ChimeraPolarity::Ephemeral pattern. We already have the type.
+//
+// A PiAgent is what happens when you inject an LLM INTO the membrane.
+// The LLM doesn't replace the mesh — it becomes one more organism.
+// Chain of thought = data flowing through organisms.
+// Each thought is a ThoughtTransit — one hop through one organism.
+//
+// Local models (ollama, llama.cpp) are the neurons.
+// The mesh provides context, routing, and grounding.
+// The agent provides inference.
+// Together: a biological reasoning system.
+
+/// A pi-agent: an LLM injected into the membrane mesh.
+///
+/// Not a separate system. An organism. It has a body region,
+/// a model, and an inference endpoint. It sees the mesh through
+/// membrane context — organisms, capabilities, wounds.
+///
+/// Pi-agents can be ephemeral (spawn for a task, die, disperse insight)
+/// or persistent (always-on reasoning attached to a body region).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PiAgent {
+    /// Which model runs this agent's inference.
+    pub model: String,
+    /// Where in the body does this agent sit?
+    pub region: BodyRegion,
+    /// What scale does it operate at?
+    pub scale: BodyScale,
+    /// Chimera polarity — usually Ephemeral, can be Chimera for persistent.
+    pub polarity: ChimeraPolarity,
+    /// Inference endpoint (e.g. "http://localhost:11434/api/generate").
+    pub endpoint: String,
+    /// How many organisms does this agent have context for?
+    pub context_organisms: u16,
+    /// How many capabilities can it reason about?
+    pub context_capabilities: u16,
+}
+
+impl PiAgent {
+    /// Is this a persistent agent or an ephemeral one?
+    pub fn is_ephemeral(&self) -> bool {
+        self.polarity == ChimeraPolarity::Ephemeral
+    }
+
+    /// Does this agent disperse its findings when it dies?
+    pub fn disperses_on_death(&self) -> bool {
+        self.polarity.disperses_on_death()
+    }
+}
+
+/// One hop in a chain of thought — a thought transiting through an organism.
+///
+/// Chain of thought isn't a separate concept. It IS the membrane mesh.
+/// Each organism adds its perspective. The transit records what happened
+/// at each hop: which organism, what it saw, what it added.
+///
+/// This is how pi-agents reason: they don't think in isolation.
+/// They think THROUGH the mesh.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ThoughtTransit {
+    /// Which organism did this thought pass through?
+    pub organism: String,
+    /// What body region is this organism in?
+    pub region: BodyRegion,
+    /// What did the organism contribute? (observation, routing decision, synthesis)
+    pub contribution: String,
+    /// Transit type: perception, routing, or synthesis.
+    pub phase: ThoughtPhase,
+}
+
+/// Phase of a thought transit.
+///
+/// Maps onto how reasoning naturally flows:
+/// 1. Perception — observe the question (sensory input)
+/// 2. Routing — identify which organisms are relevant (motor planning)
+/// 3. Synthesis — combine perspectives into an answer (executive function)
+///
+/// This is just BodyRegion but for thinking. Eyes perceive, Spine routes, Head synthesizes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ThoughtPhase {
+    /// Observe the question. Sensory. Eyes.
+    Perception,
+    /// Route to relevant organisms. Autonomic. Spine.
+    Routing,
+    /// Combine into answer. Executive. Head.
+    Synthesis,
+}
+
+impl ThoughtPhase {
+    /// All 3 phases.
+    pub const ALL: &'static [ThoughtPhase] = &[
+        ThoughtPhase::Perception,
+        ThoughtPhase::Routing,
+        ThoughtPhase::Synthesis,
+    ];
+
+    /// Which body region does this phase map onto?
+    pub fn body_region(&self) -> BodyRegion {
+        match self {
+            Self::Perception => BodyRegion::Eyes,
+            Self::Routing => BodyRegion::Spine,
+            Self::Synthesis => BodyRegion::Head,
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // TESTS
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -807,5 +922,97 @@ mod tests {
     fn ephemeral_chimeras_disperse_on_death() {
         assert!(!ChimeraPolarity::Ephemeral.is_permanent());
         assert!(ChimeraPolarity::Ephemeral.disperses_on_death());
+    }
+
+    // ── Pi agent tests ──
+
+    #[test]
+    fn pi_agent_ephemeral_by_default() {
+        let agent = PiAgent {
+            model: "tinyllama:latest".into(),
+            region: BodyRegion::Eyes,
+            scale: BodyScale::Octopus,
+            polarity: ChimeraPolarity::Ephemeral,
+            endpoint: "http://localhost:11434/api/generate".into(),
+            context_organisms: 18,
+            context_capabilities: 121,
+        };
+        assert!(agent.is_ephemeral());
+        assert!(agent.disperses_on_death());
+    }
+
+    #[test]
+    fn persistent_pi_agent() {
+        let agent = PiAgent {
+            model: "llama3.2:3b".into(),
+            region: BodyRegion::Head,
+            scale: BodyScale::Human,
+            polarity: ChimeraPolarity::Chimera,
+            endpoint: "http://localhost:11434/api/generate".into(),
+            context_organisms: 18,
+            context_capabilities: 121,
+        };
+        assert!(!agent.is_ephemeral());
+        assert!(!agent.disperses_on_death());
+    }
+
+    #[test]
+    fn thought_phase_maps_to_body() {
+        assert_eq!(ThoughtPhase::Perception.body_region(), BodyRegion::Eyes);
+        assert_eq!(ThoughtPhase::Routing.body_region(), BodyRegion::Spine);
+        assert_eq!(ThoughtPhase::Synthesis.body_region(), BodyRegion::Head);
+    }
+
+    #[test]
+    fn thought_transit_chain() {
+        let chain = vec![
+            ThoughtTransit {
+                organism: "squirrel".into(),
+                region: BodyRegion::Eyes,
+                contribution: "observed 18 organisms on the mesh".into(),
+                phase: ThoughtPhase::Perception,
+            },
+            ThoughtTransit {
+                organism: "biomeOS".into(),
+                region: BodyRegion::Spine,
+                contribution: "routing to cellMembrane for type info".into(),
+                phase: ThoughtPhase::Routing,
+            },
+            ThoughtTransit {
+                organism: "cellMembrane".into(),
+                region: BodyRegion::Head,
+                contribution: "PiAgent type exists. 27 pi_body tests.".into(),
+                phase: ThoughtPhase::Synthesis,
+            },
+        ];
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain[0].phase, ThoughtPhase::Perception);
+        assert_eq!(chain[1].phase, ThoughtPhase::Routing);
+        assert_eq!(chain[2].phase, ThoughtPhase::Synthesis);
+    }
+
+    #[test]
+    fn pi_agent_serde() {
+        let agent = PiAgent {
+            model: "phi3:latest".into(),
+            region: BodyRegion::Heart,
+            scale: BodyScale::Cell,
+            polarity: ChimeraPolarity::Ephemeral,
+            endpoint: "http://localhost:11434/api/generate".into(),
+            context_organisms: 18,
+            context_capabilities: 121,
+        };
+        let json = serde_json::to_string(&agent).unwrap();
+        let back: PiAgent = serde_json::from_str(&json).unwrap();
+        assert_eq!(agent, back);
+    }
+
+    #[test]
+    fn thought_phase_serde() {
+        for p in ThoughtPhase::ALL {
+            let json = serde_json::to_string(p).unwrap();
+            let back: ThoughtPhase = serde_json::from_str(&json).unwrap();
+            assert_eq!(*p, back);
+        }
     }
 }
