@@ -5,7 +5,7 @@
 use std::collections::BTreeMap;
 
 use super::types::*;
-use super::{VisitorClass, classify_visitor, SESSION_WINDOW_SECS, VELOCITY_THRESHOLD, VELOCITY_WINDOW_SECS};
+use super::{VisitorClass, SESSION_WINDOW_SECS, VELOCITY_THRESHOLD, VELOCITY_WINDOW_SECS};
 
 pub(crate) fn normalize_path(uri: &str) -> String {
     let path = uri.split('?').next().unwrap_or(uri);

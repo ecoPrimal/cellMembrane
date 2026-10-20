@@ -4,8 +4,8 @@
 
 use crate::ShadowOutcome;
 use crate::bridge::NeuralBridge;
-use serde_json::{Value, json};
-use tracing::{info, warn};
+use serde_json::json;
+use tracing::info;
 
 use super::{bridge_call, current_epoch, require_bridge, write_report};
 

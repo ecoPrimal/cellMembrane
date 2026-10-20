@@ -3,12 +3,10 @@
 //! Receptor analysis engine — builds reports from Caddy log entries.
 
 use std::collections::BTreeMap;
-use tracing::debug;
-use serde_json::Value;
 
 use super::types::*;
 use super::helpers::*;
-use super::{VisitorClass, classify_visitor, classify_path, classify_request};
+use super::{VisitorClass, classify_request};
 
 impl ReceptorReport {
     /// Create an empty report.

@@ -2,14 +2,10 @@
 
 //! Log retrieval and analysis dispatch.
 
-use std::collections::BTreeMap;
 use tracing::{debug, info};
-use serde_json::Value;
 
 use crate::error::Result;
 use super::types::*;
-use super::helpers::*;
-use super::{VisitorClass, classify_visitor};
 
 // ── Log Retrieval + Parsing ─────────────────────────────────────────
 
