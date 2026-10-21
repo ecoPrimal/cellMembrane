@@ -1,0 +1,11 @@
+# Live data — NOT the recipe, just the output
+live-terminal/
+skunkbat-data/
+vcs-state/
+fossilRecord/
+*.lock
+*.log
+__pycache__/
+*.pyc
+
+# The cookie jar — temp files that go stale

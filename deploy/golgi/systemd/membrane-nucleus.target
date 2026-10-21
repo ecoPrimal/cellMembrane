@@ -1,0 +1,6 @@
+[Unit]
+Description=NUCLEUS — All ecoPrimal Services (golgiBody)
+Wants=beardog-membrane.service songbird-membrane.service skunkbat.service skunky-ingest.service squirrel-membrane.service swarmvine-membrane.service caddy-tls.service membrane-petaltongue.service membrane-webhook.service nestgate-sporeprint.service step-ca.service
+
+[Install]
+WantedBy=multi-user.target

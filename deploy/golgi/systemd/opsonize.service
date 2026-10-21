@@ -1,0 +1,16 @@
+[Unit]
+Description=Opsonize — membrane discuss relay (neutron messaging axis)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/ecoPrimals/opsonize/start.sh
+Restart=always
+RestartSec=10
+WorkingDirectory=/opt/ecoPrimals/opsonize
+StandardOutput=append:/opt/ecoPrimals/logs/opsonize.log
+StandardError=append:/opt/ecoPrimals/logs/opsonize.log
+ExecStartPre=/bin/sleep 2
+
+[Install]
+WantedBy=multi-user.target

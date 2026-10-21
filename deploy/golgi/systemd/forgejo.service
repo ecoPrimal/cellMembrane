@@ -1,0 +1,16 @@
+[Unit]
+Description=Forgejo — Sovereign Git Forge (golgiBody periplasmic surface)
+After=network.target
+
+[Service]
+User=git
+Group=git
+Type=simple
+WorkingDirectory=/opt/forgejo
+ExecStart=/opt/membrane/forgejo web --config /opt/forgejo/custom/conf/app.ini
+Restart=always
+RestartSec=5
+Environment=USER=git HOME=/opt/forgejo FORGEJO_WORK_DIR=/opt/forgejo
+
+[Install]
+WantedBy=multi-user.target

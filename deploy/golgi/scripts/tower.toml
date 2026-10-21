@@ -1,0 +1,71 @@
+# Tower Atomic — biomeOS NUCLEUS configuration
+# golgi gate — 2GB VPS sovereign deployment
+
+[tower]
+name = "golgi"
+
+[discovery]
+scan_dirs = ["/opt/membrane"]
+
+[health]
+interval_secs = 30
+timeout_secs = 5
+
+[[primals]]
+binary = "/opt/membrane/beardog"
+id = "beardog"
+provides = ["crypto", "ed25519", "x25519", "btsp"]
+
+[[primals]]
+binary = "/opt/membrane/songbird"
+id = "songbird"
+provides = ["network", "routing", "drawbridge"]
+http_port = 7700
+
+[primals.env]
+SONGBIRD_DRAWBRIDGE_ROUTES = "lab=http://127.0.0.1:8090"
+SONGBIRD_PROXY_ROUTES = "live=http://127.0.0.1:8090,neutron=http://127.0.0.1:8090"
+
+[[primals]]
+binary = "/opt/membrane/skunkbat"
+id = "skunkbat"
+provides = ["security", "defense", "audit"]
+
+[[primals]]
+binary = "/opt/membrane/nestgate"
+id = "nestgate"
+provides = ["storage", "cas"]
+http_port = 9870
+
+[[primals]]
+binary = "/opt/membrane/rhizocrypt"
+id = "rhizocrypt"
+provides = ["dag", "ephemeral-memory"]
+
+[[primals]]
+binary = "/opt/membrane/loamspine"
+id = "loamspine"
+provides = ["permanence", "ledger", "certificates"]
+
+[[primals]]
+binary = "/opt/membrane/sweetgrass"
+id = "sweetgrass"
+provides = ["provenance", "attribution", "prov-o"]
+http_port = 9850
+
+[[primals]]
+binary = "/opt/membrane/barracuda"
+id = "barracuda"
+provides = ["math", "gpu-compute", "wgsl"]
+
+[[primals]]
+binary = "/opt/membrane/petaltongue"
+id = "petaltongue"
+provides = ["visualization", "ui", "sse"]
+http_port = 8090
+
+[[primals]]
+binary = "/opt/membrane/swarmvine"
+id = "swarmvine"
+provides = ["gossip", "epidemic-sync"]
+http_port = 7800

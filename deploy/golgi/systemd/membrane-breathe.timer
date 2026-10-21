@@ -1,0 +1,10 @@
+[Unit]
+Description=Membrane Stack Observer — breathe every 5 minutes
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=300
+AccuracySec=30
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=Monthly re-shallow of Forgejo bare repos
+
+[Timer]
+OnCalendar=monthly
+RandomizedDelaySec=3600
+
+[Install]
+WantedBy=timers.target

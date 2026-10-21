@@ -1,0 +1,17 @@
+# ntfy — membrane push notifications
+# Subscribe: open (anyone can subscribe to a topic)
+# Publish: only from localhost (opsonize-rs sends events)
+base-url: https://notify.primals.eco
+listen-http: 127.0.0.1:8098
+cache-file: /opt/membrane/ntfy-data/cache.db
+cache-duration: 24h
+behind-proxy: true
+keepalive-interval: 55s
+manager-interval: 1m
+visitor-subscription-limit: 20
+visitor-request-limit-burst: 30
+visitor-request-limit-replenish: 10s
+attachment-cache-dir: /opt/membrane/ntfy-data/attachments
+attachment-total-size-limit: 50M
+attachment-file-size-limit: 5M
+attachment-expiry-duration: 3h

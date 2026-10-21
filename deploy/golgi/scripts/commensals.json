@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-10-18T16:46:13Z",
+  "source": "refreshed from membrane-pulse.json",
+  "total_organisms": 4,
+  "peers": [
+    {
+      "ip": "10.13.37.14",
+      "name": "golgiLayer",
+      "in": "2.50 MiB",
+      "out": "10.70 MiB",
+      "handshake": "24 seconds ago",
+      "alive": true
+    },
+    {
+      "ip": "10.13.37.5",
+      "name": "eastGate",
+      "in": "16.29 GiB",
+      "out": "748.14 MiB",
+      "handshake": "46 seconds ago",
+      "alive": true
+    },
+    {
+      "ip": "10.13.37.16",
+      "name": "nucleus",
+      "in": "31.72 MiB",
+      "out": "2.88 GiB",
+      "handshake": "1 minute, 13 seconds ago",
+      "alive": true
+    },
+    {
+      "ip": "10.13.37.2",
+      "name": "sporeGate",
+      "in": "1.15 MiB",
+      "out": "870.08 KiB",
+      "handshake": "1 minute, 58 seconds ago",
+      "alive": true
+    }
+  ]
+}

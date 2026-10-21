@@ -1,0 +1,17 @@
+[Unit]
+Description=skunkBat — Reconnaissance & Automated Defense (fleet thymus)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/membrane/skunkbat server --bind-mode fallback --bind 127.0.0.1 --port 9750
+Environment=SKUNKBAT_DATA_DIR=/opt/membrane/skunkbat-data
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=skunkbat
+
+[Install]
+WantedBy=multi-user.target

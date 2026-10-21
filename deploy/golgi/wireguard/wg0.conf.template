@@ -1,0 +1,29 @@
+[Interface]
+Address = 10.13.37.1/24
+ListenPort = 51820
+PrivateKey = <REDACTED>
+
+[Peer]
+PublicKey = DQFIB2H0f9l+8BkcpIVicD0muWRkg3lPSJaKpVFOdBI=
+AllowedIPs = 10.13.37.16/32
+Endpoint = 137.184.197.151:51820
+PersistentKeepalive = 25
+
+[Peer]
+# eastgate — LAN HPC membrane
+PublicKey = V8Xy1uRFArEz8DseZhdAQmNdOr2TJ3Q/OhfilK3mDlA=
+AllowedIPs = 10.13.37.5/32
+PersistentKeepalive = 25
+
+[Peer]
+# sporegate — home lab WAN golgi (reborn)
+PublicKey = +y1YdQqBr3YAPenuh46pydsbnE/Fkvh3O/pfh8mOsC0=
+Endpoint = 172.232.85.202:51820
+AllowedIPs = 10.13.37.14/32
+PersistentKeepalive = 25
+
+[Peer]
+# sporeGate — LAN home lab (original, 27GB RAM beast)
+PublicKey = obCKmO89eCvh106gUdqu77L4F1ViASdDirGEddqyYSA=
+AllowedIPs = 10.13.37.2/32
+PersistentKeepalive = 25

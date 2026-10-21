@@ -1,0 +1,152 @@
+# routing_config.toml — Content-aware routing rules for membrane proxy
+#
+# Defines how Channel 3 (TLS Surface) routes incoming requests:
+#   VPS-local  → serve from NestGate cache on VPS
+#   gate       → BTSP tunnel to irongate hardware
+#   peer       → Songbird P2P direct transfer
+#   fallback   → GitHub CDN (outer membrane)
+#
+# Priority lenses: stability/security → sovereign → Rust → primal composition
+
+[routing]
+version = "0.1.0"
+default_backend = "gate"
+
+# Gate hardware (intracellular — source of truth)
+[routing.backends.gate]
+type = "btsp_tunnel"
+endpoint = "127.0.0.1:9100"           # BearDog crypto socket relays to gate
+description = "irongate via BearDog BTSP tunnel"
+auth_required = true
+latency_class = "variable"             # depends on NAT traversal path
+
+# VPS-local cache (inner membrane)
+[routing.backends.vps_cache]
+type = "local_filesystem"
+root = "/var/cache/membrane/nestgate"
+description = "NestGate content cache on VPS"
+auth_required = false
+latency_class = "fast"
+max_cacheable_size_mb = 10             # only cache files < 10MB
+
+# Songbird peer-to-peer (direct gate connection)
+[routing.backends.peer]
+type = "songbird_p2p"
+discovery_socket = "/run/membrane/songbird.sock"
+description = "Direct P2P via Songbird NAT traversal"
+auth_required = true
+latency_class = "fast"
+
+# GitHub CDN fallback (outer membrane)
+[routing.backends.fallback]
+type = "http_proxy"
+endpoint = "https://primals.eco"
+description = "GitHub Pages CDN fallback"
+auth_required = false
+latency_class = "fast"
+
+# --- Routing Rules ---
+# Evaluated in order; first match wins.
+
+[[routing.rules]]
+name = "acme_challenge"
+match = { path_prefix = "/.well-known/acme-challenge/" }
+backend = "vps_cache"
+reason = "ACME HTTP-01 challenges must be served locally"
+
+[[routing.rules]]
+name = "health"
+match = { path_prefix = "/health" }
+backend = "vps_cache"
+reason = "Health checks served locally for uptime monitoring"
+
+[[routing.rules]]
+name = "static_pages"
+match = { host = "primals.eco", path_prefix = "/", content_type = "text/html" }
+backend = "vps_cache"
+fallback = "gate"
+reason = "sporePrint HTML pages cached locally, miss -> gate"
+
+[[routing.rules]]
+name = "static_assets"
+match = { path_regex = "\\.(css|js|png|jpg|svg|woff2|ico)$" }
+backend = "vps_cache"
+fallback = "gate"
+reason = "Static assets cached locally"
+
+[[routing.rules]]
+name = "git_operations"
+match = { host = "git.primals.eco" }
+backend = "gate"
+reason = "Forgejo git operations require gate (compute + storage)"
+
+[[routing.rules]]
+name = "jupyter_sessions"
+match = { host = "lab.primals.eco" }
+backend = "gate"
+reason = "JupyterHub sessions are long-lived, need gate compute"
+
+[[routing.rules]]
+name = "api_calls"
+match = { path_prefix = "/api/" }
+backend = "gate"
+reason = "All API calls route to gate primals"
+
+[[routing.rules]]
+name = "authenticated"
+match = { header = "Authorization" }
+backend = "gate"
+reason = "Any BTSP-authenticated request goes to gate"
+
+[[routing.rules]]
+name = "large_downloads"
+match = { path_prefix = "/releases/", min_size_mb = 10 }
+backend = "peer"
+fallback = "gate"
+reason = "Large files prefer Songbird P2P to avoid VPS bandwidth costs"
+
+[[routing.rules]]
+name = "default"
+match = { path_prefix = "/" }
+backend = "gate"
+reason = "Everything else routes to gate"
+
+# --- Cache Policy ---
+
+[cache]
+max_size_mb = 256                      # NestGate cache limit on VPS
+ttl_default_seconds = 3600             # 1 hour default
+ttl_static_seconds = 86400             # 24 hours for static assets
+invalidation = "webhook"               # pappusCast push or periodic sync
+sync_interval_seconds = 300            # 5 min periodic sync fallback
+
+# --- Cost Awareness ---
+
+[cost]
+vps_bandwidth_limit_gb = 1000          # DO 2GB droplet includes 2TB transfer
+prefer_peer_above_mb = 50              # prefer Songbird P2P for files > 50MB
+metered = true                         # track bandwidth usage
+
+# --- Trust Routing (bonding model) ---
+
+[trust]
+# Covalent bonds: full access, all content, all backends
+# Ionic bonds: scoped access, public + shared content
+# Metallic bonds: institutional access, compute resources
+# Weak bonds: public content only, VPS cache preferred
+
+[trust.covalent]
+allowed_backends = ["gate", "peer", "vps_cache"]
+content_scope = "all"
+
+[trust.ionic]
+allowed_backends = ["gate", "vps_cache"]
+content_scope = "public,shared"
+
+[trust.metallic]
+allowed_backends = ["gate"]
+content_scope = "public,compute"
+
+[trust.weak]
+allowed_backends = ["vps_cache", "fallback"]
+content_scope = "public"

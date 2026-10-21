@@ -1,0 +1,11 @@
+# BUS: pressure-routed, gradient-driven, aperture-controlled
+# beat %3: epitope + plasmid + compact (~6 min)
+# beat %5: scan-sweep-sort + braid-vcs (~10 min)
+# beat %8: deploy + tuebor (~16 min)
+# tempo modifies: slow defers pipeline + deploy
+# ═══ membrane pulse — ONE entry, tempo-driven dispatch ═══
+* * * * * /opt/membrane/cap-epitope.sh
+*/2 * * * * /opt/membrane/klein-io.sh >/dev/null 2>&1
+*/5 * * * * /opt/membrane/klein-vent.sh >/dev/null 2>&1
+*/5 * * * * /opt/membrane/membrane-pulse.sh
+*/5 * * * * /opt/membrane/sourdough-cache.sh >/dev/null 2>&1

@@ -1,0 +1,16 @@
+[Unit]
+Description=songBird network orchestration + drawbridge
+After=network.target beardog.service
+
+[Service]
+Type=simple
+Environment="SONGBIRD_DRAWBRIDGE_ROUTES=/crypto=crypto,/storage=storage,/provenance=provenance,/dag=dag"
+Environment="SONGBIRD_PROXY_ROUTES=storage=http://127.0.0.1:9870,provenance=http://127.0.0.1:9850"
+ExecStart=/opt/membrane/songbird server --port 7700
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/membrane/songbird.log
+StandardError=append:/var/log/membrane/songbird.log
+
+[Install]
+WantedBy=multi-user.target

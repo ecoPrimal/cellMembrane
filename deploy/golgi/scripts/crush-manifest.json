@@ -1,0 +1,158 @@
+{
+  "timestamp": "2026-10-19T22:42:01Z",
+  "wave": "191b",
+  "type": "crush_manifest",
+  "description": "What jelly is ripe to be fossilized into Rust primals",
+  "primals": {
+    "squirrel": {
+      "binary": "/opt/membrane/squirrel",
+      "size_mb": 4.3,
+      "absorb": [
+        {
+          "script": "jitte-sense.py",
+          "lines": 91,
+          "output": "chipmunk.json jitte section",
+          "complexity": "low",
+          "note": "reads chipmunk + dashboard, computes tempo/perturbation/negentropy"
+        },
+        {
+          "script": "null-strobe.py",
+          "lines": 74,
+          "output": "null-strobe.json",
+          "complexity": "low",
+          "note": "reads campfire + spectrum + neutron, generates random flashes"
+        },
+        {
+          "script": "role-rotation-sense.py",
+          "lines": 115,
+          "output": "role-rotation.json",
+          "complexity": "medium",
+          "note": "rotates primal roles based on organism signals"
+        }
+      ],
+      "keep_as_jelly": [
+        {
+          "script": "wake-cycle-sense.py",
+          "lines": 148,
+          "reason": "still evolving \u2014 metabolism model changing"
+        },
+        {
+          "script": "journal-sense.py",
+          "lines": 133,
+          "reason": "still evolving \u2014 what to track is changing"
+        },
+        {
+          "script": "chipmunk-refresh.py",
+          "lines": 51,
+          "reason": "workaround \u2014 should be fixed in squirrel binary"
+        },
+        {
+          "script": "feed-ttl.py",
+          "lines": 141,
+          "reason": "still evolving \u2014 TTL table needs tuning"
+        },
+        {
+          "script": "build-foreman.py",
+          "lines": 166,
+          "reason": "still evolving \u2014 mise en place needs time"
+        }
+      ]
+    },
+    "skunky-ingest": {
+      "binary": "/opt/membrane/skunky-ingest",
+      "size_mb": 7.1,
+      "absorb": [
+        {
+          "script": "cardiovascular-sense.py",
+          "lines": 145,
+          "output": "cardiovascular.json",
+          "complexity": "medium",
+          "note": "arterial/venous/heart from dashboard + chipmunk"
+        },
+        {
+          "script": "circulatory-sense.py",
+          "lines": 62,
+          "output": "circulatory.json",
+          "complexity": "low",
+          "note": "entity list with blood flow from topology + cardiovascular"
+        },
+        {
+          "script": "heartbeat-sense.py",
+          "lines": 51,
+          "output": "heartbeat.json",
+          "complexity": "low",
+          "note": "quick vitals snapshot from dashboard + cardiovascular"
+        },
+        {
+          "script": "totality-sense.py",
+          "lines": 151,
+          "output": "totality.json",
+          "complexity": "medium",
+          "note": "unified totality across all feeds"
+        }
+      ],
+      "keep_as_jelly": [
+        {
+          "script": "scan_sweep_sort.py",
+          "lines": 2744,
+          "reason": "too large, too many functions, still absorbing others"
+        }
+      ]
+    },
+    "sweetgrass": {
+      "binary": "/opt/membrane/sweetgrass",
+      "size_mb": 11.5,
+      "absorb": [
+        {
+          "script": "campfire-culture.py",
+          "lines": 106,
+          "output": "campfire-culture.json",
+          "complexity": "low",
+          "note": "campfire stories + cultural threads"
+        },
+        {
+          "script": "sourdough-topology.py",
+          "lines": 170,
+          "output": "sourdough-topology.json",
+          "complexity": "medium",
+          "note": "sourdough dough/starter/culture from feeds"
+        }
+      ],
+      "keep_as_jelly": [
+        {
+          "script": "pollen-sense.py",
+          "lines": 224,
+          "reason": "still growing \u2014 pollen is a complex model"
+        }
+      ]
+    },
+    "nestgate": {
+      "binary": "/opt/membrane/nestgate",
+      "size_mb": 8.4,
+      "absorb": [
+        {
+          "script": "neutron-cache-sense.py",
+          "lines": 71,
+          "output": "neutron-cache.json",
+          "complexity": "low",
+          "note": "cache neutron messages for quick access"
+        }
+      ],
+      "keep_as_jelly": [
+        {
+          "script": "neutron-writer.py",
+          "lines": 586,
+          "reason": "586 lines, complex neutron bus routing \u2014 needs decomposition first"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "ripe_to_crush": 10,
+    "ripe_total_lines": 935,
+    "keep_as_jelly": 7,
+    "jelly_total_lines": 4067,
+    "fossils_in_record": 148,
+    "lesson": "the scripts are the dough. the binaries are the bread. the fossils are the crumbs that feed the next batch."
+  }
+}

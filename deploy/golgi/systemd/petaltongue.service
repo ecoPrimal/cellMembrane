@@ -1,0 +1,15 @@
+[Unit]
+Description=petalTongue universal UI + IPC (NUCLEUS dual-port)
+After=network.target caddy.service
+Wants=caddy.service
+
+[Service]
+Type=simple
+ExecStart=/opt/membrane/petaltongue web --port 8090 --docroot /opt/membrane/live-terminal --spa --allowed-origins "*" --cache-ttl 5 --ipc
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/membrane/petaltongue.log
+StandardError=append:/var/log/membrane/petaltongue.log
+
+[Install]
+WantedBy=multi-user.target

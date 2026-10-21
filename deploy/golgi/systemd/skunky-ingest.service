@@ -1,0 +1,36 @@
+[Unit]
+Description=skunky-ingest — Caddy JSON log tailer → skunkBat fleet thymus
+After=caddy-tls.service skunkbat.service
+Wants=caddy-tls.service skunkbat.service
+
+[Service]
+Type=simple
+ExecStart=/opt/membrane/skunky-ingest \
+  --log-path /var/log/caddy/access.log \
+  --skunkbat-addr 127.0.0.1:9750 \
+  --window-secs 30 \
+  --fleet-target-host primals.eco \
+  --caddy-bridge \
+  --caddyfile-path /etc/membrane/Caddyfile \
+  --caddy-reload-cmd "/opt/membrane/caddy reload --config /etc/membrane/Caddyfile --address localhost:2019" \
+  --scatter-server \
+  --scatter-port 9753 \
+  --scatter-ratio 0.3 \
+  --self-ips-file /etc/membrane/self-ips.txt \
+  --entity-classifier \
+  --dashboard-writer \
+  --ingestion-observer \
+  --squirrel-announce \
+  --bloom-emitter \
+  --membrane-stack \
+  --pulse-writer \
+  --ntfy-bridge
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=skunky-ingest
+Environment=LAYER_NAME=golgiBody
+
+[Install]
+WantedBy=multi-user.target
