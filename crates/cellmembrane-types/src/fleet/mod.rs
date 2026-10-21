@@ -9,10 +9,12 @@
 pub mod posture;
 pub mod antibody;
 pub mod opsonize;
+pub mod welcome;
 
 pub use posture::*;
 pub use antibody::*;
 pub use opsonize::*;
+pub use welcome::*;
 
 #[cfg(test)]
 mod tests {
