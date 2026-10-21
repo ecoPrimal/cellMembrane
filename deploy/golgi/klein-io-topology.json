@@ -1,0 +1,30 @@
+{
+  "ts": "2026-10-21T20:00:55.907435+00:00",
+  "event": "ouroboros-closed",
+  "channels": {
+    "primals-membrane": "main announcements",
+    "primals-membrane-inbox": "direct messages",
+    "primals-membrane-notes": "lab notebook",
+    "primals-membrane-chat": "conversation",
+    "primals-membrane-reminders": "reminders",
+    "gate-messages": "legacy (still works)"
+  },
+  "topology": {
+    "read_surface": "GitHub Pages (chipmunk reads)",
+    "write_surface": "ntfy.sh (chipmunk writes)",
+    "klein_fold": "same data, two surfaces, one bottle",
+    "monkey": "ntfy.sh relay \u2014 observes keys in transit, never stores",
+    "chipmunk": "neutrino \u2014 passes through, observes, never takes",
+    "consent": "the membrane IS the permission layer"
+  },
+  "golgi": {
+    "ip": "157.230.3.183",
+    "hostname": "membrane-relay",
+    "os": "Debian 13 trixie",
+    "ssh": "alive",
+    "keys": [
+      "northGate",
+      "eastGate (beardog-v1.0.0-release)"
+    ]
+  }
+}
